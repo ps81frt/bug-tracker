@@ -371,6 +371,16 @@
             font-style: italic;
         }
 
+        .tag-dev {
+            color: #c07aff;
+            border-color: #c07aff;
+        }
+
+        .tag-rc {
+            color: #ff6b35;
+            border-color: #ff6b35;
+        }
+
         /* ── FOOTER ── */
         footer {
             margin-top: 3rem;
@@ -462,6 +472,28 @@
                             class="tag tag-list">NetBSD</span></a></li>
                 <li><a href="https://www.openbsd.org/faq/faq5.html" target="_blank">OpenBSD — latest release info <span
                             class="tag tag-list">OpenBSD</span></a></li>
+            </ul>
+        </div>
+
+        <!-- DISTROS DEV / PRE-RELEASE -->
+        <div class="card" style="--accent-color:#c07aff">
+            <div class="card-header">
+                <div class="card-icon">🧪</div>
+                <div class="card-title">Distros — Dev / Pre-release</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://bodhi.fedoraproject.org/updates/?packages=kernel&status=testing" target="_blank">Fedora — kernel updates testing <span class="tag tag-rc">testing</span></a></li>
+                <li><a href="https://koji.fedoraproject.org/koji/packageinfo?packageID=8&tagOrder=-version" target="_blank">Fedora Koji — kernel builds <span class="tag tag-dev">dev</span></a></li>
+                <li><a href="https://launchpad.net/ubuntu/+milestone" target="_blank">Ubuntu — dev milestones Launchpad <span class="tag tag-dev">dev</span></a></li>
+                <li><a href="https://wiki.ubuntu.com/DevelopmentCodeNames" target="_blank">Ubuntu — dev codenames <span class="tag tag-list">ref</span></a></li>
+                <li><a href="https://packages.debian.org/experimental/kernel/" target="_blank">Debian experimental — kernel <span class="tag tag-rc">exp</span></a></li>
+                <li><a href="https://packages.debian.org/sid/linux-image-amd64" target="_blank">Debian sid — linux-image <span class="tag tag-dev">sid</span></a></li>
+                <li><a href="https://archlinux.org/packages/core/x86_64/linux/" target="_blank">Arch — linux (rolling) <span class="tag tag-dev">rolling</span></a></li>
+                <li><a href="https://aur.archlinux.org/packages/linux-mainline" target="_blank">AUR — linux-mainline <span class="tag tag-rc">RC</span></a></li>
+                <li><a href="https://build.opensuse.org/package/show/Kernel:HEAD/kernel-source" target="_blank">openSUSE OBS — kernel HEAD <span class="tag tag-dev">dev</span></a></li>
+                <li><a href="https://www.freebsd.org/where/#current" target="_blank">FreeBSD CURRENT — latest <span class="tag tag-dev">CURRENT</span></a></li>
+                <li><a href="https://www.netbsd.org/releases/current.html" target="_blank">NetBSD — -current <span class="tag tag-dev">-current</span></a></li>
+                <li><a href="https://www.openbsd.org/anoncvs.html" target="_blank">OpenBSD — -current (anoncvs) <span class="tag tag-dev">-current</span></a></li>
             </ul>
         </div>
 
@@ -724,41 +756,50 @@
 
 </body>
 <script>
-        // Fetch kernel.org releases JSON live
-        (async () => {
-            const statusEl = document.getElementById('krelease-status');
-            const listEl = document.getElementById('krelease-list');
+    (async () => {
+        const statusEl = document.getElementById('krelease-status');
+        const listEl   = document.getElementById('krelease-list');
+
+        const FALLBACK = {"releases":[{"moniker":"mainline","version":"7.1-rc6","iseol":false,"released":{"isodate":"2026-05-31"},"gitweb":"https://git.kernel.org/torvalds/h/v7.1-rc6"},{"moniker":"stable","version":"7.0.11","iseol":false,"released":{"isodate":"2026-06-01"},"source":"https://cdn.kernel.org/pub/linux/kernel/v7.x/linux-7.0.11.tar.xz","gitweb":"https://git.kernel.org/stable/h/v7.0.11"},{"moniker":"longterm","version":"6.18.34","iseol":false,"released":{"isodate":"2026-06-01"},"gitweb":"https://git.kernel.org/stable/h/v6.18.34"},{"moniker":"longterm","version":"6.12.92","iseol":false,"released":{"isodate":"2026-06-01"},"gitweb":"https://git.kernel.org/stable/h/v6.12.92"},{"moniker":"longterm","version":"6.6.142","iseol":false,"released":{"isodate":"2026-06-01"},"gitweb":"https://git.kernel.org/stable/h/v6.6.142"},{"moniker":"longterm","version":"6.1.175","iseol":false,"released":{"isodate":"2026-06-01"},"gitweb":"https://git.kernel.org/stable/h/v6.1.175"},{"moniker":"longterm","version":"5.15.209","iseol":false,"released":{"isodate":"2026-06-01"},"gitweb":"https://git.kernel.org/stable/h/v5.15.209"},{"moniker":"longterm","version":"5.10.258","iseol":false,"released":{"isodate":"2026-06-01"},"gitweb":"https://git.kernel.org/stable/h/v5.10.258"}]};
+
+        const catLabel = { mainline:'Mainline', stable:'Stable', longterm:'LTS' };
+
+        function render(data, live) {
+            listEl.innerHTML = '';
+            statusEl.innerHTML = live
+                ? '✓ Mis à jour : ' + new Date().toLocaleTimeString('fr-FR')
+                : '⚠ Cache local — ' + FALLBACK.releases[1].released.isodate + ' · <a href="https://www.kernel.org/releases.json" target="_blank" style="color:var(--accent)">voir JSON</a>';
+            data.releases.forEach(rel => {
+                if (!['mainline','stable','longterm'].includes(rel.moniker)) return;
+                const row = document.createElement('div');
+                row.className = 'krelease';
+                const eol  = rel.iseol ? '<span class="krelease-eol">EOL</span>' : '';
+                const href = rel.gitweb ?? rel.source ?? 'https://kernel.org';
+                row.innerHTML = `
+                    <span class="krelease-cat">${catLabel[rel.moniker]}</span>
+                    <a class="krelease-ver" href="${href}" target="_blank">${rel.version}</a>
+                    <span class="krelease-date">${rel.released?.isodate ?? ''}</span>
+                    ${eol}`;
+                listEl.appendChild(row);
+            });
+        }
+
+        render(FALLBACK, false);
+
+        const PROXIES = [
+            'https://www.kernel.org/releases.json',
+            'https://corsproxy.io/?url=' + encodeURIComponent('https://www.kernel.org/releases.json'),
+            'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.kernel.org/releases.json')
+        ];
+        for (const url of PROXIES) {
             try {
-                const r = await fetch('https://www.kernel.org/releases.json');
-                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const r = await fetch(url, { signal: AbortSignal.timeout(4000) });
+                if (!r.ok) continue;
                 const data = await r.json();
-                statusEl.textContent = '✓ Mis à jour : ' + new Date().toLocaleTimeString('fr-FR');
-                const catLabel = {
-                    'mainline': 'Mainline',
-                    'stable': 'Stable',
-                    'longterm': 'LTS',
-                    'linux-next': 'linux-next',
-                    'snapshot': 'Snapshot'
-                };
-                data.releases.forEach(rel => {
-                    if (['mainline', 'stable', 'longterm'].includes(rel.category)) {
-                        const row = document.createElement('div');
-                        row.className = 'krelease';
-                        const eol = rel.iseol ? '<span class="krelease-eol">EOL</span>' : '';
-                        const dt = rel.released?.isodate ?? '';
-                        row.innerHTML = `
-          <span class="krelease-cat">${catLabel[rel.category] ?? rel.category}</span>
-          <a class="krelease-ver" href="${rel.source ?? 'https://kernel.org'}" target="_blank">${rel.version}</a>
-          <span class="krelease-date">${dt}</span>
-          ${eol}
-        `;
-                        listEl.appendChild(row);
-                    }
-                });
-            } catch (e) {
-                statusEl.innerHTML = '⚠ Impossible de charger (<a href="https://www.kernel.org/releases.json" target="_blank">voir JSON</a>)';
-            }
-        })();
+                if (data?.releases?.length) { render(data, true); break; }
+            } catch(e) { /* essai suivant */ }
+        }
+    })();
 </script>
 
 </html>
