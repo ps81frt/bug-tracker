@@ -438,6 +438,35 @@
             letter-spacing: .05em;
         }
 
+        /* ── NAV PILLS ── */
+        .header-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .35rem .25rem;
+            margin-top: .8rem;
+        }
+
+        .header-nav a {
+            font-family: var(--font-ui);
+            font-size: .62rem;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: .22rem .55rem;
+            border: 1px solid color-mix(in srgb, var(--pill-color, var(--accent)) 45%, transparent);
+            color: var(--pill-color, var(--accent));
+            background: color-mix(in srgb, var(--pill-color, var(--accent)) 7%, transparent);
+            transition: background .15s, border-color .15s, color .15s;
+            white-space: nowrap;
+        }
+
+        .header-nav a:hover {
+            background: color-mix(in srgb, var(--pill-color, var(--accent)) 18%, transparent);
+            border-color: var(--pill-color, var(--accent));
+            color: #fff;
+        }
+
         /* scanline overlay */
         body::after {
             content: '';
@@ -457,8 +486,20 @@
         <div class="header-label">// référence debug &amp; kernel</div>
         <h1>Bug <span>Trackers</span></h1>
         <h1>Kernel &amp; BSD</h1>
-        <div class="header-sub">FEDORA · UBUNTU · DEBIAN · ARCH · SUSE · MINT · CACHYOS · POP!_OS · LINUX MAINLINE · FREEBSD · NETBSD · OPENBSD
-        </div>
+        <nav class="header-nav">
+            <a href="#fedora"   style="--pill-color:#60b0ff">FEDORA</a>
+            <a href="#ubuntu"   style="--pill-color:#ff9940">UBUNTU</a>
+            <a href="#debian"   style="--pill-color:#e0523a">DEBIAN</a>
+            <a href="#arch"     style="--pill-color:#4fb3ff">ARCH</a>
+            <a href="#suse"     style="--pill-color:#73d44c">SUSE</a>
+            <a href="#mint"     style="--pill-color:#87cf3e">MINT</a>
+            <a href="#cachy"    style="--pill-color:#a78bfa">CACHYOS</a>
+            <a href="#popos"    style="--pill-color:#48b9c7">POP!_OS</a>
+            <a href="#kernel"   style="--pill-color:#00e5ff">LINUX MAINLINE</a>
+            <a href="#freebsd"  style="--pill-color:#e05c4e">FREEBSD</a>
+            <a href="#netbsd"   style="--pill-color:#f08050">NETBSD</a>
+            <a href="#openbsd"  style="--pill-color:#f7c948">OPENBSD</a>
+        </nav>
     </header>
 
     <div class="releases-grid">
@@ -578,6 +619,7 @@
                 <li><a href="https://archlinux.org/download/" target="_blank">Arch Linux — ISO (rolling, same) <span class="tag tag-dev">rolling</span></a></li>
                 <li><a href="https://download.opensuse.org/tumbleweed/iso/" target="_blank">openSUSE Tumbleweed — ISO <span class="tag tag-dev">tumbleweed</span></a></li>
                 <li><a href="https://download.freebsd.org/snapshots/ISO-IMAGES/" target="_blank">FreeBSD — snapshots ISO <span class="tag tag-nightly">snapshots</span></a></li>
+                <li><a href="https://cdn.openbsd.org/pub/OpenBSD/snapshots/amd64/" target="_blank">OpenBSD — snapshots -current amd64 <span class="tag tag-nightly">snapshots</span></a></li>
                 <li><a href="https://iso.cachyos.org/" target="_blank">CachyOS — ISO CDN (rolling) <span class="tag tag-dev">rolling</span></a></li>
             </ul>
         </div>
@@ -587,7 +629,7 @@
     <div class="grid">
 
         <!-- FEDORA -->
-        <div class="card c-fedora">
+        <div id="fedora" class="card c-fedora">
             <div class="card-header">
                 <div class="card-icon">🎩</div>
                 <div class="card-title">Fedora</div>
@@ -608,7 +650,7 @@
         </div>
 
         <!-- UBUNTU -->
-        <div class="card c-ubuntu">
+        <div id="ubuntu" class="card c-ubuntu">
             <div class="card-header">
                 <div class="card-icon">🟠</div>
                 <div class="card-title">Ubuntu / Launchpad</div>
@@ -620,7 +662,7 @@
                             class="tag tag-list">liste</span></a></li>
                 <li><a href="https://launchpad.net/ubuntu/+bugs" target="_blank">launchpad.net/ubuntu/+bugs</a></li>
                 <li><a href="https://launchpad.net/bugs" target="_blank">launchpad.net/bugs</a></li>
-                <li><a href="https://ubuntuforums.org/" target="_blank">UbuntuForums.org — forum officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://discourse.ubuntu.com/" target="_blank">Ubuntu Discourse — forum officiel <span class="tag tag-forum">forum</span></a></li>
                 <li><a href="https://forum.ubuntu-fr.org/" target="_blank">Ubuntu-FR — forum francophone <span class="tag tag-fr">FR</span></a></li>
                 <li><a href="https://bugs.launchpad.net/ubuntu/+source/linux/+filebug" target="_blank">➕ Reporter un bug
                         linux <span class="tag tag-report">report</span></a></li>
@@ -628,7 +670,7 @@
         </div>
 
         <!-- DEBIAN -->
-        <div class="card c-debian">
+        <div id="debian" class="card c-debian">
             <div class="card-header">
                 <div class="card-icon">🌀</div>
                 <div class="card-title">Debian</div>
@@ -650,7 +692,7 @@
         </div>
 
         <!-- ARCH LINUX -->
-        <div class="card c-arch">
+        <div id="arch" class="card c-arch">
             <div class="card-header">
                 <div class="card-icon">🏹</div>
                 <div class="card-title">Arch Linux</div>
@@ -669,7 +711,7 @@
         </div>
 
         <!-- openSUSE / SUSE -->
-        <div class="card c-suse">
+        <div id="suse" class="card c-suse">
             <div class="card-header">
                 <div class="card-icon">🦎</div>
                 <div class="card-title">openSUSE / SUSE</div>
@@ -687,7 +729,7 @@
         </div>
 
         <!-- KERNEL MAINLINE BUGZILLA -->
-        <div class="card c-kernel">
+        <div id="kernel" class="card c-kernel">
             <div class="card-header">
                 <div class="card-icon">🐧</div>
                 <div class="card-title">Linux Kernel (mainline)</div>
@@ -789,7 +831,7 @@
         </div>
 
         <!-- FREEBSD -->
-        <div class="card c-freebsd">
+        <div id="freebsd" class="card c-freebsd">
             <div class="card-header">
                 <div class="card-icon">😈</div>
                 <div class="card-title">FreeBSD</div>
@@ -807,7 +849,7 @@
         </div>
 
         <!-- NETBSD -->
-        <div class="card c-netbsd">
+        <div id="netbsd" class="card c-netbsd">
             <div class="card-header">
                 <div class="card-icon">🚩</div>
                 <div class="card-title">NetBSD</div>
@@ -815,19 +857,19 @@
             <ul class="link-list">
                 <li><a href="https://www.netbsd.org/support/send-pr.html" target="_blank">Soumettre un bug report</a>
                 </li>
+                <li><a href="https://www.netbsd.org/community/" target="_blank">netbsd.org/community — ML, IRC, forums <span class="tag tag-forum">community</span></a></li>
                 <li><a href="https://gnats.netbsd.org/" target="_blank">gnats.netbsd.org — GNATS</a></li>
                 <li><a href="https://gnats.netbsd.org/cgi-bin/query-pr-summary.pl" target="_blank">Query PR summary
                         <span class="tag tag-search">search</span></a></li>
                 <li><a href="https://gnats.netbsd.org/cgi-bin/query-pr-summary.pl?state=open" target="_blank">PRs
                         ouverts <span class="tag tag-list">open</span></a></li>
-                <li><a href="https://forum.netbsd.org/" target="_blank">Forum NetBSD — officiel <span class="tag tag-forum">forum</span></a></li>
                 <li><a href="https://www.netbsd.org/cgi-bin/sendpr.cgi?gndb=netbsd" target="_blank">➕ Soumettre un PR
                         (web) <span class="tag tag-report">report</span></a></li>
             </ul>
         </div>
 
         <!-- OPENBSD -->
-        <div class="card c-openbsd">
+        <div id="openbsd" class="card c-openbsd">
             <div class="card-header">
                 <div class="card-icon">🐡</div>
                 <div class="card-title">OpenBSD</div>
@@ -844,12 +886,8 @@
             </ul>
         </div>
 
-    </div><!-- /grid -->
-
-    <div class="grid">
-
         <!-- LINUX MINT -->
-        <div class="card c-mint">
+        <div id="mint" class="card c-mint">
             <div class="card-header">
                 <div class="card-icon">🌿</div>
                 <div class="card-title">Linux Mint</div>
@@ -867,7 +905,7 @@
         </div>
 
         <!-- CACHYOS -->
-        <div class="card c-cachy">
+        <div id="cachy" class="card c-cachy">
             <div class="card-header">
                 <div class="card-icon">⚡</div>
                 <div class="card-title">CachyOS</div>
@@ -883,7 +921,7 @@
         </div>
 
         <!-- POP!_OS -->
-        <div class="card c-popos">
+        <div id="popos" class="card c-popos">
             <div class="card-header">
                 <div class="card-icon">🚀</div>
                 <div class="card-title">Pop!_OS — System76</div>
