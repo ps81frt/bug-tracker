@@ -381,6 +381,46 @@
             border-color: #ff6b35;
         }
 
+        .tag-iso {
+            color: #00e5ff;
+            border-color: #00e5ff;
+        }
+
+        .tag-nightly {
+            color: #ff3b6e;
+            border-color: #ff3b6e;
+        }
+
+        .tag-forum {
+            color: #39ff14;
+            border-color: #39ff14;
+        }
+
+        .tag-fr {
+            color: #4db8ff;
+            border-color: #4db8ff;
+        }
+
+        .c-iso-stable {
+            --accent-color: #00e5ff;
+        }
+
+        .c-iso-dev {
+            --accent-color: #ff3b6e;
+        }
+
+        .c-mint {
+            --accent-color: #87cf3e;
+        }
+
+        .c-cachy {
+            --accent-color: #a78bfa;
+        }
+
+        .c-popos {
+            --accent-color: #48b9c7;
+        }
+
         /* ── FOOTER ── */
         footer {
             margin-top: 3rem;
@@ -417,7 +457,7 @@
         <div class="header-label">// référence debug &amp; kernel</div>
         <h1>Bug <span>Trackers</span></h1>
         <h1>Kernel &amp; BSD</h1>
-        <div class="header-sub">FEDORA · UBUNTU · DEBIAN · ARCH · SUSE · LINUX MAINLINE · FREEBSD · NETBSD · OPENBSD
+        <div class="header-sub">FEDORA · UBUNTU · DEBIAN · ARCH · SUSE · MINT · CACHYOS · POP!_OS · LINUX MAINLINE · FREEBSD · NETBSD · OPENBSD
         </div>
     </header>
 
@@ -472,6 +512,9 @@
                             class="tag tag-list">NetBSD</span></a></li>
                 <li><a href="https://www.openbsd.org/faq/faq5.html" target="_blank">OpenBSD — latest release info <span
                             class="tag tag-list">OpenBSD</span></a></li>
+                <li><a href="https://www.linuxmint.com/download.php" target="_blank">Linux Mint — releases <span class="tag tag-list">Mint</span></a></li>
+                <li><a href="https://cachyos.org/download/" target="_blank">CachyOS — download page <span class="tag tag-list">CachyOS</span></a></li>
+                <li><a href="https://system76.com/pop/download/" target="_blank">Pop!_OS — download page <span class="tag tag-list">Pop!_OS</span></a></li>
             </ul>
         </div>
 
@@ -495,6 +538,47 @@
                 <li><a href="https://www.freebsd.org/where/#current" target="_blank">FreeBSD CURRENT — latest <span class="tag tag-dev">CURRENT</span></a></li>
                 <li><a href="https://www.netbsd.org/releases/current.html" target="_blank">NetBSD — -current <span class="tag tag-dev">-current</span></a></li>
                 <li><a href="https://www.openbsd.org/anoncvs.html" target="_blank">OpenBSD — -current (anoncvs) <span class="tag tag-dev">-current</span></a></li>
+                <li><a href="https://github.com/linuxmint/linuxmint/releases" target="_blank">Linux Mint — beta releases GitHub <span class="tag tag-rc">beta</span></a></li>
+                <li><a href="https://discuss.cachyos.org/c/feedback/bugreports/10" target="_blank">CachyOS — rolling (Arch-based) <span class="tag tag-dev">rolling</span></a></li>
+                <li><a href="https://github.com/pop-os/pop/releases" target="_blank">Pop!_OS — releases GitHub <span class="tag tag-dev">dev</span></a></li>
+            </ul>
+        </div>
+
+        <!-- ISO STABLE -->
+        <div class="card c-iso-stable">
+            <div class="card-header">
+                <div class="card-icon">💿</div>
+                <div class="card-title">ISO — Stable</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://fedoraproject.org/workstation/download/" target="_blank">Fedora Workstation — ISO stable <span class="tag tag-iso">Fedora</span></a></li>
+                <li><a href="https://releases.ubuntu.com" target="_blank">Ubuntu — ISO stable <span class="tag tag-iso">Ubuntu</span></a></li>
+                <li><a href="https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/" target="_blank">Debian — ISO stable amd64 <span class="tag tag-iso">Debian</span></a></li>
+                <li><a href="https://archlinux.org/download/" target="_blank">Arch Linux — ISO (rolling) <span class="tag tag-iso">Arch</span></a></li>
+                <li><a href="https://get.opensuse.org" target="_blank">openSUSE — Leap &amp; Tumbleweed <span class="tag tag-iso">SUSE</span></a></li>
+                <li><a href="https://download.freebsd.org/releases/ISO-IMAGES/" target="_blank">FreeBSD — ISO releases <span class="tag tag-iso">FreeBSD</span></a></li>
+                <li><a href="https://www.netbsd.org/releases/" target="_blank">NetBSD — ISO releases <span class="tag tag-iso">NetBSD</span></a></li>
+                <li><a href="https://www.openbsd.org/faq/faq4.html" target="_blank">OpenBSD — installation ISO <span class="tag tag-iso">OpenBSD</span></a></li>
+                <li><a href="https://www.linuxmint.com/download.php" target="_blank">Linux Mint — ISO stable <span class="tag tag-iso">Mint</span></a></li>
+                <li><a href="https://cachyos.org/download/" target="_blank">CachyOS — ISO stable <span class="tag tag-iso">CachyOS</span></a></li>
+                <li><a href="https://system76.com/pop/download/" target="_blank">Pop!_OS — ISO stable <span class="tag tag-iso">Pop!_OS</span></a></li>
+            </ul>
+        </div>
+
+        <!-- ISO DEV / NIGHTLY -->
+        <div class="card c-iso-dev">
+            <div class="card-header">
+                <div class="card-icon">🌙</div>
+                <div class="card-title">ISO — Dev / Nightly</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Workstation/x86_64/iso/" target="_blank">Fedora Rawhide — ISO nightly <span class="tag tag-nightly">rawhide</span></a></li>
+                <li><a href="https://cdimage.ubuntu.com/daily-live/current/" target="_blank">Ubuntu — daily live build <span class="tag tag-nightly">daily</span></a></li>
+                <li><a href="https://cdimage.debian.org/cdimage/daily-builds/daily/arch-latest/amd64/iso-cd/" target="_blank">Debian — daily build amd64 <span class="tag tag-nightly">daily</span></a></li>
+                <li><a href="https://archlinux.org/download/" target="_blank">Arch Linux — ISO (rolling, same) <span class="tag tag-dev">rolling</span></a></li>
+                <li><a href="https://download.opensuse.org/tumbleweed/iso/" target="_blank">openSUSE Tumbleweed — ISO <span class="tag tag-dev">tumbleweed</span></a></li>
+                <li><a href="https://download.freebsd.org/snapshots/ISO-IMAGES/" target="_blank">FreeBSD — snapshots ISO <span class="tag tag-nightly">snapshots</span></a></li>
+                <li><a href="https://iso.cachyos.org/" target="_blank">CachyOS — ISO CDN (rolling) <span class="tag tag-dev">rolling</span></a></li>
             </ul>
         </div>
 
@@ -516,6 +600,8 @@
                         target="_blank">Bugs Kernel — plus récents <span class="tag tag-search">récent</span></a></li>
                 <li><a href="https://packages.fedoraproject.org/pkgs/kernel/kernel/"
                         target="_blank">packages.fedoraproject.org — kernel</a></li>
+                <li><a href="https://discussion.fedoraproject.org/" target="_blank">Forum officiel Fedora Discussion <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forums.fedora-fr.org/" target="_blank">Fedora-FR — forum francophone <span class="tag tag-fr">FR</span></a></li>
                 <li><a href="https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&component=kernel"
                         target="_blank">➕ Reporter un bug kernel <span class="tag tag-report">report</span></a></li>
             </ul>
@@ -534,6 +620,8 @@
                             class="tag tag-list">liste</span></a></li>
                 <li><a href="https://launchpad.net/ubuntu/+bugs" target="_blank">launchpad.net/ubuntu/+bugs</a></li>
                 <li><a href="https://launchpad.net/bugs" target="_blank">launchpad.net/bugs</a></li>
+                <li><a href="https://ubuntuforums.org/" target="_blank">UbuntuForums.org — forum officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forum.ubuntu-fr.org/" target="_blank">Ubuntu-FR — forum francophone <span class="tag tag-fr">FR</span></a></li>
                 <li><a href="https://bugs.launchpad.net/ubuntu/+source/linux/+filebug" target="_blank">➕ Reporter un bug
                         linux <span class="tag tag-report">report</span></a></li>
             </ul>
@@ -553,6 +641,9 @@
                             class="tag tag-search">search</span></a></li>
                 <li><a href="https://security-tracker.debian.org/tracker/" target="_blank">Security Tracker CVE <span
                             class="tag tag-sec">CVE</span></a></li>
+                <li><a href="https://forums.debian.net/" target="_blank">Forums Debian — officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://www.debian-fr.org/" target="_blank">debian-fr.org — forum francophone <span class="tag tag-fr">FR</span></a></li>
+                <li><a href="https://forum-debian.fr/" target="_blank">forum-debian.fr — francophone <span class="tag tag-fr">FR</span></a></li>
                 <li><a href="https://www.debian.org/Bugs/Reporting" target="_blank">➕ Reporter un bug <span
                             class="tag tag-report">report</span></a></li>
             </ul>
@@ -570,6 +661,8 @@
                 <li><a href="https://gitlab.archlinux.org/groups/archlinux/-/issues" target="_blank">GitLab — Tous les
                         issues Arch</a></li>
                 <li><a href="https://bugs.archlinux.org/" target="_blank">bugs.archlinux.org (archive)</a></li>
+                <li><a href="https://bbs.archlinux.org/" target="_blank">BBS Arch Linux — forum officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forums.archlinux.fr/" target="_blank">archlinux.fr — forum francophone <span class="tag tag-fr">FR</span></a></li>
                 <li><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/issues/new"
                         target="_blank">➕ Reporter un bug kernel <span class="tag tag-report">report</span></a></li>
             </ul>
@@ -586,6 +679,8 @@
                 <li><a href="https://bugzilla.opensuse.org/buglist.cgi?component=Kernel&product=openSUSE+Tumbleweed&bug_status=__open__"
                         target="_blank">Bugs Kernel Tumbleweed <span class="tag tag-list">liste</span></a></li>
                 <li><a href="https://bugzilla.suse.com/" target="_blank">bugzilla.suse.com (enterprise)</a></li>
+                <li><a href="https://forums.opensuse.org/" target="_blank">Forums openSUSE — officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://www.alionet.org/" target="_blank">Alionet — communauté francophone <span class="tag tag-fr">FR</span></a></li>
                 <li><a href="https://bugzilla.opensuse.org/enter_bug.cgi?product=openSUSE+Tumbleweed&component=Kernel"
                         target="_blank">➕ Reporter un bug kernel <span class="tag tag-report">report</span></a></li>
             </ul>
@@ -705,6 +800,7 @@
                         target="_blank">Recherche avancée <span class="tag tag-search">search</span></a></li>
                 <li><a href="https://bugs.freebsd.org/bugzilla/buglist.cgi?component=kern&query_format=advanced"
                         target="_blank">Composant kern <span class="tag tag-list">kern</span></a></li>
+                <li><a href="https://forums.freebsd.org/" target="_blank">Forums FreeBSD — officiel <span class="tag tag-forum">forum</span></a></li>
                 <li><a href="https://bugs.freebsd.org/bugzilla/enter_bug.cgi?product=Base+System&component=kern"
                         target="_blank">➕ Reporter un bug kern <span class="tag tag-report">report</span></a></li>
             </ul>
@@ -724,6 +820,7 @@
                         <span class="tag tag-search">search</span></a></li>
                 <li><a href="https://gnats.netbsd.org/cgi-bin/query-pr-summary.pl?state=open" target="_blank">PRs
                         ouverts <span class="tag tag-list">open</span></a></li>
+                <li><a href="https://forum.netbsd.org/" target="_blank">Forum NetBSD — officiel <span class="tag tag-forum">forum</span></a></li>
                 <li><a href="https://www.netbsd.org/cgi-bin/sendpr.cgi?gndb=netbsd" target="_blank">➕ Soumettre un PR
                         (web) <span class="tag tag-report">report</span></a></li>
             </ul>
@@ -741,8 +838,62 @@
                 </li>
                 <li><a href="https://marc.info/?l=openbsd-bugs&r=1&w=2" target="_blank">ML openbsd-bugs (marc.info)</a>
                 </li>
+                <li><a href="https://openbsd.fr.eu.org/" target="_blank">OpenBSD.fr — communauté francophone <span class="tag tag-fr">FR</span></a></li>
                 <li><a href="https://www.openbsd.org/report.html" target="_blank">➕ Reporter un bug <span
                             class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+    </div><!-- /grid -->
+
+    <div class="grid">
+
+        <!-- LINUX MINT -->
+        <div class="card c-mint">
+            <div class="card-header">
+                <div class="card-icon">🌿</div>
+                <div class="card-title">Linux Mint</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://github.com/linuxmint" target="_blank">github.com/linuxmint — org</a></li>
+                <li><a href="https://github.com/linuxmint/Cinnamon/issues" target="_blank">Cinnamon — issues <span class="tag tag-list">issues</span></a></li>
+                <li><a href="https://github.com/linuxmint/mint-meta/issues" target="_blank">mint-meta — issues <span class="tag tag-list">meta</span></a></li>
+                <li><a href="https://projects.linuxmint.com/reporting-an-issue.html" target="_blank">Guide reporter un bug <span class="tag tag-list">guide</span></a></li>
+                <li><a href="https://forums.linuxmint.com/" target="_blank">Forums Linux Mint — officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forums.linuxmint.com/viewforum.php?f=63" target="_blank">Forums Mint — section française <span class="tag tag-fr">FR</span></a></li>
+                <li><a href="https://forum-francophone-linuxmint.fr/" target="_blank">Forum-Francophone-LinuxMint.fr <span class="tag tag-fr">FR</span></a></li>
+                <li><a href="https://github.com/linuxmint/Cinnamon/issues/new" target="_blank">➕ Reporter un bug Cinnamon <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- CACHYOS -->
+        <div class="card c-cachy">
+            <div class="card-header">
+                <div class="card-icon">⚡</div>
+                <div class="card-title">CachyOS</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://github.com/CachyOS/distribution/issues" target="_blank">distribution — issues généraux <span class="tag tag-list">issues</span></a></li>
+                <li><a href="https://github.com/CachyOS/linux-cachyos/issues" target="_blank">linux-cachyos — issues kernel <span class="tag tag-list">kernel</span></a></li>
+                <li><a href="https://discuss.cachyos.org/c/feedback/bugreports/10" target="_blank">Forum — bugreports <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://discuss.cachyos.org/" target="_blank">discuss.cachyos.org — forum général <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://github.com/CachyOS" target="_blank">github.com/CachyOS — org</a></li>
+                <li><a href="https://github.com/CachyOS/distribution/issues/new" target="_blank">➕ Reporter un bug <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- POP!_OS -->
+        <div class="card c-popos">
+            <div class="card-header">
+                <div class="card-icon">🚀</div>
+                <div class="card-title">Pop!_OS — System76</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://github.com/pop-os/pop/issues" target="_blank">pop — issues généraux <span class="tag tag-list">issues</span></a></li>
+                <li><a href="https://github.com/pop-os/cosmic-epoch/issues" target="_blank">COSMIC — issues desktop <span class="tag tag-list">COSMIC</span></a></li>
+                <li><a href="https://github.com/pop-os" target="_blank">github.com/pop-os — org</a></li>
+                <li><a href="https://system76.com/support" target="_blank">system76.com/support</a></li>
+                <li><a href="https://github.com/pop-os/pop/issues/new" target="_blank">➕ Reporter un bug <span class="tag tag-report">report</span></a></li>
             </ul>
         </div>
 
@@ -751,7 +902,7 @@
     <footer>
         <span>// BUG TRACKERS REFERENCE — KERNEL &amp; BSD</span>
         <span>Généré le
-            <script>document.write(new Date().toLocaleDateString('fr-FR'))</script> · 14 sources · 47 liens
+            <script>document.write(new Date().toLocaleDateString('fr-FR'))</script> · 19 sources · 105 liens
         </span>
     </footer>
 
