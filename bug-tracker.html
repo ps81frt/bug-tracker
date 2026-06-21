@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bug Trackers — Kernel &amp; BSD</title>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230a0c0f'/><text x='4' y='24' font-size='22'>🐛</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+
+        :root {
+            --bg: #0a0c0f;
+            --surface: #0f1318;
+            --border: #1e2730;
+            --accent: #00e5ff;
+            --accent2: #ff6b35;
+            --accent3: #39ff14;
+            --dim: #3a4a5a;
+            --text: #c8d8e8;
+            --text-muted: #5a7080;
+            --font-mono: 'Share Tech Mono', monospace;
+            --font-ui: 'Rajdhani', sans-serif;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-mono);
+            min-height: 100vh;
+            padding: 2rem 1.5rem 4rem;
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 39px, #111820 39px, #111820 40px),
+                repeating-linear-gradient(90deg, transparent, transparent 39px, #111820 39px, #111820 40px);
+        }
+
+        /* ── HEADER ── */
+        header {
+            border-left: 3px solid var(--accent);
+            padding: 0 0 0 1.2rem;
+            margin-bottom: 2.8rem;
+            position: relative;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -3px;
+            width: 3px;
+            height: 100%;
+            background: var(--accent);
+            box-shadow: 0 0 14px var(--accent), 0 0 28px var(--accent);
+        }
+
+        .header-label {
+            font-family: var(--font-ui);
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .25em;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: .3rem;
+        }
+
+        h1 {
+            font-family: var(--font-ui);
+            font-size: clamp(1.6rem, 4vw, 2.6rem);
+            font-weight: 700;
+            letter-spacing: .04em;
+            color: #fff;
+            line-height: 1.1;
+        }
+
+        h1 span {
+            color: var(--accent);
+        }
+
+        .header-sub {
+            margin-top: .5rem;
+            font-size: .78rem;
+            color: var(--text-muted);
+            letter-spacing: .05em;
+        }
+
+        /* ── GRID LAYOUT ── */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.4rem;
+        }
+
+        /* ── SECTION CARD ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            transition: border-color .2s;
+        }
+
+        .card:hover {
+            border-color: var(--dim);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .85rem 1rem;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 40%;
+            height: 1px;
+            background: var(--accent-color, var(--accent));
+            box-shadow: 0 0 8px var(--accent-color, var(--accent));
+        }
+
+        .card-icon {
+            font-size: 1.1rem;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--accent-color, var(--accent)) 10%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent-color, var(--accent)) 30%, transparent);
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-family: var(--font-ui);
+            font-size: .95rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--accent-color, var(--accent));
+        }
+
+        .link-list {
+            padding: .6rem 0;
+            list-style: none;
+        }
+
+        .link-list li {
+            border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+        }
+
+        .link-list li:last-child {
+            border-bottom: none;
+        }
+
+        .link-list a {
+            display: flex;
+            align-items: baseline;
+            gap: .6rem;
+            padding: .55rem 1rem;
+            text-decoration: none;
+            color: var(--text);
+            font-size: .76rem;
+            letter-spacing: .02em;
+            transition: background .15s, color .15s;
+            word-break: break-all;
+        }
+
+        .link-list a:hover {
+            background: color-mix(in srgb, var(--accent-color, var(--accent)) 6%, transparent);
+            color: #fff;
+        }
+
+        .link-list a::before {
+            content: '›';
+            color: var(--accent-color, var(--accent));
+            flex-shrink: 0;
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        /* tag badges */
+        .tag {
+            font-size: .6rem;
+            padding: .1rem .35rem;
+            border: 1px solid;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            flex-shrink: 0;
+            font-family: var(--font-ui);
+            font-weight: 700;
+        }
+
+        .tag-search {
+            color: var(--accent3);
+            border-color: var(--accent3);
+        }
+
+        .tag-list {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .tag-fuzz {
+            color: var(--accent2);
+            border-color: var(--accent2);
+        }
+
+        .tag-patch {
+            color: #c07aff;
+            border-color: #c07aff;
+        }
+
+        .tag-sec {
+            color: #ff3b6e;
+            border-color: #ff3b6e;
+        }
+
+        .tag-gpu {
+            color: #ffdb4d;
+            border-color: #ffdb4d;
+        }
+
+        .tag-report {
+            color: #ff3b6e;
+            border-color: #ff3b6e;
+        }
+
+        /* accent colors per section */
+        .c-fedora {
+            --accent-color: #60b0ff;
+        }
+
+        .c-ubuntu {
+            --accent-color: #ff9940;
+        }
+
+        .c-debian {
+            --accent-color: #e0523a;
+        }
+
+        .c-arch {
+            --accent-color: #4fb3ff;
+        }
+
+        .c-suse {
+            --accent-color: #73d44c;
+        }
+
+        .c-kernel {
+            --accent-color: #00e5ff;
+        }
+
+        .c-lore {
+            --accent-color: #b0c4de;
+        }
+
+        .c-github {
+            --accent-color: #c8c8c8;
+        }
+
+        .c-syzbot {
+            --accent-color: #ff6b35;
+        }
+
+        .c-patchwork {
+            --accent-color: #c07aff;
+        }
+
+        .c-drm {
+            --accent-color: #ffdb4d;
+        }
+
+        .c-freebsd {
+            --accent-color: #e05c4e;
+        }
+
+        .c-netbsd {
+            --accent-color: #f08050;
+        }
+
+        .c-openbsd {
+            --accent-color: #f7c948;
+        }
+
+        /* ── RELEASES LIVE ── */
+        .releases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.4rem;
+            margin-bottom: 1.4rem;
+        }
+
+        .c-releases {
+            --accent-color: #39ff14;
+        }
+
+        .kernel-live {
+            padding: .5rem 1rem .8rem;
+        }
+
+        .kernel-live-title {
+            font-family: var(--font-ui);
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .15em;
+            color: var(--accent3);
+            text-transform: uppercase;
+            margin-bottom: .5rem;
+        }
+
+        .krelease {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: .5rem;
+            padding: .3rem 0;
+            border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+            font-size: .74rem;
+        }
+
+        .krelease:last-child {
+            border-bottom: none;
+        }
+
+        .krelease-cat {
+            color: var(--text-muted);
+            font-size: .65rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            min-width: 4.5rem;
+            flex-shrink: 0;
+        }
+
+        .krelease-ver {
+            color: var(--accent3);
+            font-weight: bold;
+            flex: 1;
+        }
+
+        .krelease-date {
+            color: var(--text-muted);
+            font-size: .65rem;
+        }
+
+        .krelease-eol {
+            color: #ff3b6e;
+            font-size: .62rem;
+            font-family: var(--font-ui);
+            font-weight: 700;
+            letter-spacing: .05em;
+        }
+
+        #krelease-status {
+            font-size: .68rem;
+            color: var(--text-muted);
+            padding: .4rem 0;
+            font-style: italic;
+        }
+
+        .tag-dev {
+            color: #c07aff;
+            border-color: #c07aff;
+        }
+
+        .tag-rc {
+            color: #ff6b35;
+            border-color: #ff6b35;
+        }
+
+        .tag-iso {
+            color: #00e5ff;
+            border-color: #00e5ff;
+        }
+
+        .tag-nightly {
+            color: #ff3b6e;
+            border-color: #ff3b6e;
+        }
+
+        .tag-forum {
+            color: #39ff14;
+            border-color: #39ff14;
+        }
+
+        .tag-fr {
+            color: #4db8ff;
+            border-color: #4db8ff;
+        }
+
+        .c-iso-stable {
+            --accent-color: #00e5ff;
+        }
+
+        .c-iso-dev {
+            --accent-color: #ff3b6e;
+        }
+
+        .c-mint {
+            --accent-color: #87cf3e;
+        }
+
+        .c-cachy {
+            --accent-color: #a78bfa;
+        }
+
+        .c-popos {
+            --accent-color: #48b9c7;
+        }
+
+        .c-gnome {
+            --accent-color: #3584e4;
+        }
+
+        .c-kde {
+            --accent-color: #7f5af0;
+        }
+
+        .c-xfce {
+            --accent-color: #14b8a6;
+        }
+
+        .c-mate {
+            --accent-color: #b5cc18;
+        }
+
+        .c-cinnamon {
+            --accent-color: #c1440e;
+        }
+
+        .c-budgie {
+            --accent-color: #ff5fa2;
+        }
+
+        .c-lxqt {
+            --accent-color: #6c7a89;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            font-size: .68rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: .5rem;
+        }
+
+        footer span {
+            letter-spacing: .05em;
+        }
+
+        /* ── NAV PILLS ── */
+        .header-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .35rem .25rem;
+            margin-top: .8rem;
+        }
+
+        .header-nav a {
+            font-family: var(--font-ui);
+            font-size: .62rem;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: .22rem .55rem;
+            border: 1px solid color-mix(in srgb, var(--pill-color, var(--accent)) 45%, transparent);
+            color: var(--pill-color, var(--accent));
+            background: color-mix(in srgb, var(--pill-color, var(--accent)) 7%, transparent);
+            transition: background .15s, border-color .15s, color .15s;
+            white-space: nowrap;
+        }
+
+        .header-nav a:hover {
+            background: color-mix(in srgb, var(--pill-color, var(--accent)) 18%, transparent);
+            border-color: var(--pill-color, var(--accent));
+            color: #fff;
+        }
+
+        /* scanline overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(transparent, transparent 2px,
+                    rgba(0, 0, 0, .04) 2px, rgba(0, 0, 0, .04) 4px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-label">// référence debug &amp; kernel</div>
+        <h1>Bug <span>Trackers</span></h1>
+        <h1>Kernel &amp; BSD</h1>
+        <nav class="header-nav">
+            <a href="#fedora"   style="--pill-color:#60b0ff">FEDORA</a>
+            <a href="#ubuntu"   style="--pill-color:#ff9940">UBUNTU</a>
+            <a href="#debian"   style="--pill-color:#e0523a">DEBIAN</a>
+            <a href="#arch"     style="--pill-color:#4fb3ff">ARCH</a>
+            <a href="#suse"     style="--pill-color:#73d44c">SUSE</a>
+            <a href="#mint"     style="--pill-color:#87cf3e">MINT</a>
+            <a href="#cachy"    style="--pill-color:#a78bfa">CACHYOS</a>
+            <a href="#popos"    style="--pill-color:#48b9c7">POP!_OS</a>
+            <a href="#gnome"    style="--pill-color:#3584e4">GNOME</a>
+            <a href="#kde"      style="--pill-color:#7f5af0">KDE PLASMA</a>
+            <a href="#xfce"     style="--pill-color:#14b8a6">XFCE</a>
+            <a href="#mate"     style="--pill-color:#b5cc18">MATE</a>
+            <a href="#cinnamon" style="--pill-color:#c1440e">CINNAMON</a>
+            <a href="#budgie"   style="--pill-color:#ff5fa2">BUDGIE</a>
+            <a href="#lxqt"     style="--pill-color:#6c7a89">LXQT</a>
+            <a href="#kernel"   style="--pill-color:#00e5ff">KERNEL LINUX MAINLINE</a>
+            <a href="#freebsd"  style="--pill-color:#e05c4e">FREEBSD</a>
+            <a href="#netbsd"   style="--pill-color:#f08050">NETBSD</a>
+            <a href="#openbsd"  style="--pill-color:#f7c948">OPENBSD</a>
+        </nav>
+    </header>
+
+    <div class="releases-grid">
+
+        <!-- KERNEL RELEASES LIVE -->
+        <div class="card c-releases">
+            <div class="card-header">
+                <div class="card-icon">🚀</div>
+                <div class="card-title">Linux Kernel — Releases live</div>
+            </div>
+            <div class="kernel-live">
+                <div class="kernel-live-title">// kernel.org — chargement en direct</div>
+                <div id="krelease-status">Chargement…</div>
+                <div id="krelease-list"></div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://www.kernel.org/" target="_blank">kernel.org — page principale</a></li>
+                <li><a href="https://www.kernel.org/releases.html" target="_blank">kernel.org/releases.html <span
+                            class="tag tag-list">toutes</span></a></li>
+                <li><a href="https://www.kernel.org/feeds/kdist.xml" target="_blank">RSS/Atom kdist feed <span
+                            class="tag tag-search">flux</span></a></li>
+                <li><a href="https://endoflife.date/linux" target="_blank">endoflife.date/linux <span
+                            class="tag tag-sec">EOL</span></a></li>
+            </ul>
+        </div>
+
+        <!-- DISTROS RELEASES -->
+        <div class="card c-releases" style="--accent-color:#60b0ff">
+            <div class="card-header">
+                <div class="card-icon">📦</div>
+                <div class="card-title">Distros — Pages Releases</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://fedoraproject.org/wiki/Releases" target="_blank">Fedora — toutes les releases <span
+                            class="tag tag-list">Fedora</span></a></li>
+                <li><a href="https://bodhi.fedoraproject.org/updates/?packages=kernel&status=stable"
+                        target="_blank">Fedora — kernel updates stable <span class="tag tag-search">live</span></a></li>
+                <li><a href="https://ubuntu.com/about/release-cycle" target="_blank">Ubuntu — release cycle <span
+                            class="tag tag-list">Ubuntu</span></a></li>
+                <li><a href="https://launchpad.net/ubuntu/+milestone" target="_blank">Ubuntu — milestones Launchpad</a>
+                </li>
+                <li><a href="https://www.debian.org/releases/" target="_blank">Debian — releases officielles <span
+                            class="tag tag-list">Debian</span></a></li>
+                <li><a href="https://archlinux.org/releng/releases/" target="_blank">Arch Linux — releases <span
+                            class="tag tag-list">Arch</span></a></li>
+                <li><a href="https://get.opensuse.org/tumbleweed/" target="_blank">openSUSE Tumbleweed — latest <span
+                            class="tag tag-list">SUSE</span></a></li>
+                <li><a href="https://www.freebsd.org/releases/" target="_blank">FreeBSD — toutes les releases <span
+                            class="tag tag-list">FreeBSD</span></a></li>
+                <li><a href="https://www.netbsd.org/releases/" target="_blank">NetBSD — releases <span
+                            class="tag tag-list">NetBSD</span></a></li>
+                <li><a href="https://www.openbsd.org/faq/faq5.html" target="_blank">OpenBSD — latest release info <span
+                            class="tag tag-list">OpenBSD</span></a></li>
+                <li><a href="https://www.linuxmint.com/download.php" target="_blank">Linux Mint — releases <span class="tag tag-list">Mint</span></a></li>
+                <li><a href="https://cachyos.org/download/" target="_blank">CachyOS — download page <span class="tag tag-list">CachyOS</span></a></li>
+                <li><a href="https://system76.com/pop/download/" target="_blank">Pop!_OS — download page <span class="tag tag-list">Pop!_OS</span></a></li>
+            </ul>
+        </div>
+
+        <!-- DISTROS DEV / PRE-RELEASE -->
+        <div class="card" style="--accent-color:#c07aff">
+            <div class="card-header">
+                <div class="card-icon">🧪</div>
+                <div class="card-title">Distros — Dev / Pre-release</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://packages.fedoraproject.org/pkgs/kernel/kernel/fedora-rawhide.html" target="_blank">Fedora Rawhide — kernel <span class="tag tag-dev">rawhide</span></a></li>
+                <li><a href="https://bodhi.fedoraproject.org/updates/?packages=kernel&status=testing" target="_blank">Fedora — kernel updates testing <span class="tag tag-rc">testing</span></a></li>
+                <li><a href="https://fedoraproject.org/wiki/Kernel/Rawhide" target="_blank">Fedora — Kernel/Rawhide wiki <span class="tag tag-list">ref</span></a></li>
+                <li><a href="https://launchpad.net/ubuntu" target="_blank">Ubuntu — série dev actuelle (Launchpad) <span class="tag tag-dev">dev</span></a></li>
+                <li><a href="https://launchpad.net/ubuntu/+source/linux/+changelog" target="_blank">Ubuntu — kernel changelog live <span class="tag tag-list">log</span></a></li>
+                <li><a href="https://packages.debian.org/experimental/kernel/" target="_blank">Debian experimental — kernel <span class="tag tag-rc">exp</span></a></li>
+                <li><a href="https://packages.debian.org/sid/linux-image-amd64" target="_blank">Debian sid — linux-image <span class="tag tag-dev">sid</span></a></li>
+                <li><a href="https://archlinux.org/packages/core/x86_64/linux/" target="_blank">Arch — linux (rolling) <span class="tag tag-dev">rolling</span></a></li>
+                <li><a href="https://aur.archlinux.org/packages/linux-mainline" target="_blank">AUR — linux-mainline <span class="tag tag-rc">RC</span></a></li>
+                <li><a href="https://build.opensuse.org/package/show/Kernel:HEAD/kernel-source" target="_blank">openSUSE OBS — kernel HEAD <span class="tag tag-dev">dev</span></a></li>
+                <li><a href="https://www.freebsd.org/where/#current" target="_blank">FreeBSD CURRENT — latest <span class="tag tag-dev">CURRENT</span></a></li>
+                <li><a href="https://www.netbsd.org/releases/current.html" target="_blank">NetBSD — -current <span class="tag tag-dev">-current</span></a></li>
+                <li><a href="https://www.openbsd.org/anoncvs.html" target="_blank">OpenBSD — -current (anoncvs) <span class="tag tag-dev">-current</span></a></li>
+                <li><a href="https://github.com/linuxmint/linuxmint/releases" target="_blank">Linux Mint — beta releases GitHub <span class="tag tag-rc">beta</span></a></li>
+                <li><a href="https://discuss.cachyos.org/c/feedback/bugreports/10" target="_blank">CachyOS — rolling (Arch-based) <span class="tag tag-dev">rolling</span></a></li>
+                <li><a href="https://github.com/pop-os/pop/releases" target="_blank">Pop!_OS — releases GitHub <span class="tag tag-dev">dev</span></a></li>
+            </ul>
+        </div>
+
+        <!-- ISO STABLE -->
+        <div class="card c-iso-stable">
+            <div class="card-header">
+                <div class="card-icon">💿</div>
+                <div class="card-title">ISO — Stable</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://fedoraproject.org/workstation/download/" target="_blank">Fedora Workstation — ISO stable <span class="tag tag-iso">Fedora</span></a></li>
+                <li><a href="https://releases.ubuntu.com" target="_blank">Ubuntu — ISO stable <span class="tag tag-iso">Ubuntu</span></a></li>
+                <li><a href="https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/" target="_blank">Debian — ISO stable amd64 <span class="tag tag-iso">Debian</span></a></li>
+                <li><a href="https://archlinux.org/download/" target="_blank">Arch Linux — ISO (rolling) <span class="tag tag-iso">Arch</span></a></li>
+                <li><a href="https://get.opensuse.org" target="_blank">openSUSE — Leap &amp; Tumbleweed <span class="tag tag-iso">SUSE</span></a></li>
+                <li><a href="https://download.freebsd.org/releases/ISO-IMAGES/" target="_blank">FreeBSD — ISO releases <span class="tag tag-iso">FreeBSD</span></a></li>
+                <li><a href="https://www.netbsd.org/releases/" target="_blank">NetBSD — ISO releases <span class="tag tag-iso">NetBSD</span></a></li>
+                <li><a href="https://www.openbsd.org/faq/faq4.html" target="_blank">OpenBSD — installation ISO <span class="tag tag-iso">OpenBSD</span></a></li>
+                <li><a href="https://www.linuxmint.com/download.php" target="_blank">Linux Mint — ISO stable <span class="tag tag-iso">Mint</span></a></li>
+                <li><a href="https://cachyos.org/download/" target="_blank">CachyOS — ISO stable <span class="tag tag-iso">CachyOS</span></a></li>
+                <li><a href="https://system76.com/pop/download/" target="_blank">Pop!_OS — ISO stable <span class="tag tag-iso">Pop!_OS</span></a></li>
+            </ul>
+        </div>
+
+        <!-- ISO DEV / NIGHTLY -->
+        <div class="card c-iso-dev">
+            <div class="card-header">
+                <div class="card-icon">🌙</div>
+                <div class="card-title">ISO — Dev / Nightly</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Workstation/x86_64/iso/" target="_blank">Fedora Rawhide — ISO nightly <span class="tag tag-nightly">rawhide</span></a></li>
+                <li><a href="https://cdimage.ubuntu.com/daily-live/current/" target="_blank">Ubuntu — daily live build <span class="tag tag-nightly">daily</span></a></li>
+                <li><a href="https://cdimage.ubuntu.com/ubuntu-server/daily-live/current/" target="_blank">Ubuntu Server — daily live <span class="tag tag-nightly">server</span></a></li>
+                <li><a href="https://cdimage.debian.org/cdimage/daily-builds/daily/arch-latest/amd64/iso-cd/" target="_blank">Debian — daily build amd64 <span class="tag tag-nightly">daily</span></a></li>
+                <li><a href="https://archlinux.org/download/" target="_blank">Arch Linux — ISO (rolling, same) <span class="tag tag-dev">rolling</span></a></li>
+                <li><a href="https://download.opensuse.org/tumbleweed/iso/" target="_blank">openSUSE Tumbleweed — ISO <span class="tag tag-dev">tumbleweed</span></a></li>
+                <li><a href="https://download.freebsd.org/snapshots/ISO-IMAGES/" target="_blank">FreeBSD — snapshots ISO <span class="tag tag-nightly">snapshots</span></a></li>
+                <li><a href="https://cdn.openbsd.org/pub/OpenBSD/snapshots/amd64/" target="_blank">OpenBSD — snapshots -current amd64 <span class="tag tag-nightly">snapshots</span></a></li>
+                <li><a href="https://iso.cachyos.org/" target="_blank">CachyOS — ISO CDN (rolling) <span class="tag tag-dev">rolling</span></a></li>
+            </ul>
+        </div>
+
+    </div><!-- /releases-grid -->
+
+    <div class="grid">
+
+        <!-- FEDORA -->
+        <div id="fedora" class="card c-fedora">
+            <div class="card-header">
+                <div class="card-icon">🎩</div>
+                <div class="card-title">Fedora</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://bugzilla.redhat.com/" target="_blank">bugzilla.redhat.com</a></li>
+                <li><a href="https://bugzilla.redhat.com/buglist.cgi?component=Kernel&product=Fedora"
+                        target="_blank">Bugs Kernel — Fedora <span class="tag tag-list">liste</span></a></li>
+                <li><a href="https://bugzilla.redhat.com/buglist.cgi?component=Kernel&product=Fedora&order=Bug%20ID%20DESC"
+                        target="_blank">Bugs Kernel — plus récents <span class="tag tag-search">récent</span></a></li>
+                <li><a href="https://packages.fedoraproject.org/pkgs/kernel/kernel/"
+                        target="_blank">packages.fedoraproject.org — kernel</a></li>
+                <li><a href="https://discussion.fedoraproject.org/" target="_blank">Forum officiel Fedora Discussion <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forums.fedora-fr.org/" target="_blank">Fedora-FR — forum francophone <span class="tag tag-fr">FR</span></a></li>
+                <li><a href="https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&component=kernel"
+                        target="_blank">➕ Reporter un bug kernel <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- UBUNTU -->
+        <div id="ubuntu" class="card c-ubuntu">
+            <div class="card-header">
+                <div class="card-icon">🟠</div>
+                <div class="card-title">Ubuntu / Launchpad</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://bugs.launchpad.net/ubuntu" target="_blank">bugs.launchpad.net/ubuntu</a></li>
+                <li><a href="https://bugs.launchpad.net/ubuntu/+source/linux" target="_blank">Source linux</a></li>
+                <li><a href="https://bugs.launchpad.net/ubuntu/+source/linux/+bugs" target="_blank">Bugs linux <span
+                            class="tag tag-list">liste</span></a></li>
+                <li><a href="https://launchpad.net/ubuntu/+bugs" target="_blank">launchpad.net/ubuntu/+bugs</a></li>
+                <li><a href="https://launchpad.net/bugs" target="_blank">launchpad.net/bugs</a></li>
+                <li><a href="https://discourse.ubuntu.com/" target="_blank">Ubuntu Discourse — forum officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forum.ubuntu-fr.org/" target="_blank">Ubuntu-FR — forum francophone <span class="tag tag-fr">FR</span></a></li>
+                <li><a href="https://bugs.launchpad.net/ubuntu/+source/linux/+filebug" target="_blank">➕ Reporter un bug
+                        linux <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- DEBIAN -->
+        <div id="debian" class="card c-debian">
+            <div class="card-header">
+                <div class="card-icon">🌀</div>
+                <div class="card-title">Debian</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://bugs.debian.org/" target="_blank">bugs.debian.org</a></li>
+                <li><a href="https://bugs.debian.org/cgi-bin/pkgreport.cgi?pkg=linux-image-amd64" target="_blank">Bugs
+                        linux-image-amd64 <span class="tag tag-list">liste</span></a></li>
+                <li><a href="https://bugs.debian.org/cgi-bin/search.cgi" target="_blank">Recherche BTS <span
+                            class="tag tag-search">search</span></a></li>
+                <li><a href="https://security-tracker.debian.org/tracker/" target="_blank">Security Tracker CVE <span
+                            class="tag tag-sec">CVE</span></a></li>
+                <li><a href="https://forums.debian.net/" target="_blank">Forums Debian — officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://www.debian-fr.org/" target="_blank">debian-fr.org — forum francophone <span class="tag tag-fr">FR</span></a></li>
+                <li><a href="https://forum-debian.fr/" target="_blank">forum-debian.fr — francophone <span class="tag tag-fr">FR</span></a></li>
+                <li><a href="https://www.debian.org/Bugs/Reporting" target="_blank">➕ Reporter un bug <span
+                            class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- ARCH LINUX -->
+        <div id="arch" class="card c-arch">
+            <div class="card-header">
+                <div class="card-icon">🏹</div>
+                <div class="card-title">Arch Linux</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/issues"
+                        target="_blank">GitLab — Issues kernel <span class="tag tag-list">issues</span></a></li>
+                <li><a href="https://gitlab.archlinux.org/groups/archlinux/-/issues" target="_blank">GitLab — Tous les
+                        issues Arch</a></li>
+                <li><a href="https://bugs.archlinux.org/" target="_blank">bugs.archlinux.org (archive)</a></li>
+                <li><a href="https://bbs.archlinux.org/" target="_blank">BBS Arch Linux — forum officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forums.archlinux.fr/" target="_blank">archlinux.fr — forum francophone <span class="tag tag-fr">FR</span></a></li>
+                <li><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/issues/new"
+                        target="_blank">➕ Reporter un bug kernel <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- openSUSE / SUSE -->
+        <div id="suse" class="card c-suse">
+            <div class="card-header">
+                <div class="card-icon">🦎</div>
+                <div class="card-title">openSUSE / SUSE</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://bugzilla.opensuse.org/" target="_blank">bugzilla.opensuse.org</a></li>
+                <li><a href="https://bugzilla.opensuse.org/buglist.cgi?component=Kernel&product=openSUSE+Tumbleweed&bug_status=__open__"
+                        target="_blank">Bugs Kernel Tumbleweed <span class="tag tag-list">liste</span></a></li>
+                <li><a href="https://bugzilla.suse.com/" target="_blank">bugzilla.suse.com (enterprise)</a></li>
+                <li><a href="https://forums.opensuse.org/" target="_blank">Forums openSUSE — officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://www.alionet.org/" target="_blank">Alionet — communauté francophone <span class="tag tag-fr">FR</span></a></li>
+                <li><a href="https://bugzilla.opensuse.org/enter_bug.cgi?product=openSUSE+Tumbleweed&component=Kernel"
+                        target="_blank">➕ Reporter un bug kernel <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- KERNEL MAINLINE BUGZILLA -->
+        <div id="kernel" class="card c-kernel">
+            <div class="card-header">
+                <div class="card-icon">🐧</div>
+                <div class="card-title">Linux Kernel (mainline)</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://bugzilla.kernel.org/" target="_blank">bugzilla.kernel.org</a></li>
+                <li><a href="https://bugzilla.kernel.org/buglist.cgi?bug_status=__open__" target="_blank">Tous les bugs
+                        ouverts <span class="tag tag-list">liste</span></a></li>
+                <li><a href="https://bugzilla.kernel.org/query.cgi?format=advanced" target="_blank">Recherche avancée
+                        <span class="tag tag-search">search</span></a></li>
+                <li><a href="https://bugzilla.kernel.org/enter_bug.cgi" target="_blank">➕ Reporter un bug upstream <span
+                            class="tag tag-report">report</span></a></li>
+                <li><a href="https://www.kernel.org/doc/html/latest/" target="_blank">Kernel docs — latest <span class="tag tag-list">doc</span></a></li>
+                <li><a href="https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html" target="_blank">Kernel params — boot / reserve_mem <span 
+                            class="tag tag-list">doc</span></a></li>
+                
+            </ul>
+        </div>
+
+        <!-- LORE / MAILING LISTS -->
+        <div class="card c-lore">
+            <div class="card-header">
+                <div class="card-icon">📬</div>
+                <div class="card-title">Lore — Mailing Lists</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://lore.kernel.org/" target="_blank">lore.kernel.org — accueil</a></li>
+                <li><a href="https://lore.kernel.org/linux-kernel/" target="_blank">LKML archive</a></li>
+                <li><a href="https://lore.kernel.org/all/?q=bug" target="_blank">Recherche « bug » toutes listes <span
+                            class="tag tag-search">search</span></a></li>
+                <li><a href="https://lore.kernel.org/all/?q=regression" target="_blank">Recherche « regression » <span
+                            class="tag tag-search">search</span></a></li>
+            </ul>
+        </div>
+
+        <!-- GITHUB -->
+        <div class="card c-github">
+            <div class="card-header">
+                <div class="card-icon">🐙</div>
+                <div class="card-title">GitHub — torvalds/linux</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://github.com/torvalds/linux" target="_blank">github.com/torvalds/linux</a></li>
+                <li><a href="https://github.com/torvalds/linux/issues" target="_blank">Issues GitHub <span
+                            class="tag tag-list">issues</span></a></li>
+                <li><a href="https://github.com/search?q=repo%3Atorvalds%2Flinux+bug&type=issues"
+                        target="_blank">Recherche issues « bug » <span class="tag tag-search">search</span></a></li>
+                <li><a href="https://github.com/torvalds/linux/issues/new" target="_blank">➕ Ouvrir un issue <span
+                            class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- SYZBOT -->
+        <div class="card c-syzbot">
+            <div class="card-header">
+                <div class="card-icon">🤖</div>
+                <div class="card-title">Syzbot — Fuzzer Google</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://syzkaller.appspot.com/" target="_blank">syzkaller.appspot.com — dashboard <span
+                            class="tag tag-fuzz">fuzz</span></a></li>
+                <li><a href="https://syzkaller.appspot.com/upstream" target="_blank">Bugs upstream actifs <span
+                            class="tag tag-list">ouverts</span></a></li>
+                <li><a href="https://syzkaller.appspot.com/upstream/fixed" target="_blank">Bugs upstream fixés</a></li>
+                <li><a href="https://github.com/google/syzkaller" target="_blank">github.com/google/syzkaller</a></li>
+            </ul>
+        </div>
+
+        <!-- PATCHWORK -->
+        <div class="card c-patchwork">
+            <div class="card-header">
+                <div class="card-icon">🔧</div>
+                <div class="card-title">Patchwork — Patches</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://patchwork.kernel.org/" target="_blank">patchwork.kernel.org <span
+                            class="tag tag-patch">patches</span></a></li>
+                <li><a href="https://patchwork.kernel.org/project/linux-kernel/list/" target="_blank">Liste patches
+                        linux-kernel</a></li>
+            </ul>
+        </div>
+
+        <!-- DRM / GPU -->
+        <div class="card c-drm">
+            <div class="card-header">
+                <div class="card-icon">🖥️</div>
+                <div class="card-title">DRM / GPU — freedesktop</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://gitlab.freedesktop.org/drm/kernel/-/issues" target="_blank">DRM kernel — issues
+                        <span class="tag tag-gpu">GPU</span></a></li>
+                <li><a href="https://gitlab.freedesktop.org/drm/amd/-/issues" target="_blank">AMD / AMDGPU — issues</a>
+                </li>
+                <li><a href="https://gitlab.freedesktop.org/drm/i915/kernel/-/issues" target="_blank">Intel i915 —
+                        issues</a></li>
+                <li><a href="https://gitlab.freedesktop.org/drm/xe/kernel/-/issues" target="_blank">Intel Xe —
+                        issues</a></li>
+                <li><a href="https://gitlab.freedesktop.org/drm/msm/-/issues" target="_blank">Qualcomm MSM — issues</a>
+                </li>
+                <li><a href="https://gitlab.freedesktop.org/drm/kernel/-/issues/new" target="_blank">➕ Reporter un bug
+                        DRM <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- FREEBSD -->
+        <div id="freebsd" class="card c-freebsd">
+            <div class="card-header">
+                <div class="card-icon">😈</div>
+                <div class="card-title">FreeBSD</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://bugs.freebsd.org/bugzilla/" target="_blank">bugs.freebsd.org/bugzilla</a></li>
+                <li><a href="https://bugs.freebsd.org/bugzilla/buglist.cgi?query_format=advanced"
+                        target="_blank">Recherche avancée <span class="tag tag-search">search</span></a></li>
+                <li><a href="https://bugs.freebsd.org/bugzilla/buglist.cgi?component=kern&query_format=advanced"
+                        target="_blank">Composant kern <span class="tag tag-list">kern</span></a></li>
+                <li><a href="https://forums.freebsd.org/" target="_blank">Forums FreeBSD — officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://bugs.freebsd.org/bugzilla/enter_bug.cgi?product=Base+System&component=kern"
+                        target="_blank">➕ Reporter un bug kern <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- NETBSD -->
+        <div id="netbsd" class="card c-netbsd">
+            <div class="card-header">
+                <div class="card-icon">🚩</div>
+                <div class="card-title">NetBSD</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://www.netbsd.org/support/send-pr.html" target="_blank">Soumettre un bug report</a>
+                </li>
+                <li><a href="https://www.netbsd.org/community/" target="_blank">netbsd.org/community — ML, IRC, forums <span class="tag tag-forum">community</span></a></li>
+                <li><a href="https://gnats.netbsd.org/" target="_blank">gnats.netbsd.org — GNATS</a></li>
+                <li><a href="https://gnats.netbsd.org/cgi-bin/query-pr-summary.pl" target="_blank">Query PR summary
+                        <span class="tag tag-search">search</span></a></li>
+                <li><a href="https://gnats.netbsd.org/cgi-bin/query-pr-summary.pl?state=open" target="_blank">PRs
+                        ouverts <span class="tag tag-list">open</span></a></li>
+                <li><a href="https://www.netbsd.org/cgi-bin/sendpr.cgi?gndb=netbsd" target="_blank">➕ Soumettre un PR
+                        (web) <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- OPENBSD -->
+        <div id="openbsd" class="card c-openbsd">
+            <div class="card-header">
+                <div class="card-icon">🐡</div>
+                <div class="card-title">OpenBSD</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://www.openbsd.org/errata.html" target="_blank">openbsd.org/errata.html</a></li>
+                <li><a href="https://marc.info/?l=openbsd-tech&r=1&w=2" target="_blank">ML openbsd-tech (marc.info)</a>
+                </li>
+                <li><a href="https://marc.info/?l=openbsd-bugs&r=1&w=2" target="_blank">ML openbsd-bugs (marc.info)</a>
+                </li>
+                <li><a href="https://openbsd.fr.eu.org/" target="_blank">OpenBSD.fr — communauté francophone <span class="tag tag-fr">FR</span></a></li>
+                <li><a href="https://www.openbsd.org/report.html" target="_blank">➕ Reporter un bug <span
+                            class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- LINUX MINT -->
+        <div id="mint" class="card c-mint">
+            <div class="card-header">
+                <div class="card-icon">🌿</div>
+                <div class="card-title">Linux Mint</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://github.com/linuxmint" target="_blank">github.com/linuxmint — org</a></li>
+                <li><a href="https://github.com/linuxmint/Cinnamon/issues" target="_blank">Cinnamon — issues <span class="tag tag-list">issues</span></a></li>
+                <li><a href="https://github.com/linuxmint/mint-meta/issues" target="_blank">mint-meta — issues <span class="tag tag-list">meta</span></a></li>
+                <li><a href="https://projects.linuxmint.com/reporting-an-issue.html" target="_blank">Guide reporter un bug <span class="tag tag-list">guide</span></a></li>
+                <li><a href="https://forums.linuxmint.com/" target="_blank">Forums Linux Mint — officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forums.linuxmint.com/viewforum.php?f=63" target="_blank">Forums Mint — section française <span class="tag tag-fr">FR</span></a></li>
+                <li><a href="https://forum-francophone-linuxmint.fr/" target="_blank">Forum-Francophone-LinuxMint.fr <span class="tag tag-fr">FR</span></a></li>
+                <li><a href="https://github.com/linuxmint/Cinnamon/issues/new" target="_blank">➕ Reporter un bug Cinnamon <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- CACHYOS -->
+        <div id="cachy" class="card c-cachy">
+            <div class="card-header">
+                <div class="card-icon">⚡</div>
+                <div class="card-title">CachyOS</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://github.com/CachyOS/distribution/issues" target="_blank">distribution — issues généraux <span class="tag tag-list">issues</span></a></li>
+                <li><a href="https://github.com/CachyOS/linux-cachyos/issues" target="_blank">linux-cachyos — issues kernel <span class="tag tag-list">kernel</span></a></li>
+                <li><a href="https://discuss.cachyos.org/c/feedback/bugreports/10" target="_blank">Forum — bugreports <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://discuss.cachyos.org/" target="_blank">discuss.cachyos.org — forum général <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://github.com/CachyOS" target="_blank">github.com/CachyOS — org</a></li>
+                <li><a href="https://github.com/CachyOS/distribution/issues/new" target="_blank">➕ Reporter un bug <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- POP!_OS -->
+        <div id="popos" class="card c-popos">
+            <div class="card-header">
+                <div class="card-icon">🚀</div>
+                <div class="card-title">Pop!_OS — System76</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://github.com/pop-os/pop/issues" target="_blank">pop — issues généraux <span class="tag tag-list">issues</span></a></li>
+                <li><a href="https://github.com/pop-os/cosmic-epoch/issues" target="_blank">COSMIC — issues desktop <span class="tag tag-list">COSMIC</span></a></li>
+                <li><a href="https://github.com/pop-os" target="_blank">github.com/pop-os — org</a></li>
+                <li><a href="https://system76.com/support" target="_blank">system76.com/support</a></li>
+                <li><a href="https://github.com/pop-os/pop/issues/new" target="_blank">➕ Reporter un bug <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- ============ DESKTOP ENVIRONMENTS ============ -->
+
+        <!-- GNOME -->
+        <div id="gnome" class="card c-gnome">
+            <div class="card-header">
+                <div class="card-icon">👣</div>
+                <div class="card-title">GNOME</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://gitlab.gnome.org/" target="_blank">gitlab.gnome.org — accueil</a></li>
+                <li><a href="https://gitlab.gnome.org/groups/GNOME/-/issues" target="_blank">Tous les issues GNOME <span class="tag tag-list">issues</span></a></li>
+                <li><a href="https://gitlab.gnome.org/GNOME/gnome-shell/-/issues" target="_blank">GNOME Shell — issues <span class="tag tag-list">Shell</span></a></li>
+                <li><a href="https://discourse.gnome.org/" target="_blank">GNOME Discourse — forum officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forum.ubuntu-fr.org/viewforum.php?id=121" target="_blank">Forum Ubuntu-fr — sous-forum GNOME <span class="tag tag-forum">forum FR</span></a></li>
+                <li><a href="https://handbook.gnome.org/issues/reporting.html" target="_blank">Guide — comment reporter un bug <span class="tag tag-list">guide</span></a></li>
+                <li><a href="https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/new" target="_blank">➕ Reporter un bug GNOME Shell <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- KDE PLASMA -->
+        <div id="kde" class="card c-kde">
+            <div class="card-header">
+                <div class="card-icon">🐉</div>
+                <div class="card-title">KDE Plasma</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://bugs.kde.org/" target="_blank">bugs.kde.org — Bugzilla</a></li>
+                <li><a href="https://bugs.kde.org/buglist.cgi?product=plasmashell" target="_blank">Bugs Plasma Shell <span class="tag tag-list">Plasma</span></a></li>
+                <li><a href="https://invent.kde.org/plasma" target="_blank">invent.kde.org — GitLab Plasma <span class="tag tag-list">GitLab</span></a></li>
+                <li><a href="https://discuss.kde.org/" target="_blank">KDE Discuss — forum officiel <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://discuss.kde.org/c/local-communities/kde-en-francais/17" target="_blank">KDE en français — catégorie FR officielle <span class="tag tag-forum">forum FR</span></a></li>
+                <li><a href="https://community.kde.org/Get_Involved/Issue_Reporting" target="_blank">Guide — comment reporter un bug <span class="tag tag-list">guide</span></a></li>
+                <li><a href="https://bugs.kde.org/enter_bug.cgi?product=plasmashell" target="_blank">➕ Reporter un bug Plasma <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- XFCE -->
+        <div id="xfce" class="card c-xfce">
+            <div class="card-header">
+                <div class="card-icon">🐭</div>
+                <div class="card-title">Xfce</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://gitlab.xfce.org/xfce" target="_blank">gitlab.xfce.org — org</a></li>
+                <li><a href="https://gitlab.xfce.org/groups/xfce/-/issues" target="_blank">Tous les issues Xfce <span class="tag tag-list">issues</span></a></li>
+                <li><a href="https://forum.xfce.org/" target="_blank">Forum officiel Xfce <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forum.ubuntu-fr.org/viewforum.php?id=38" target="_blank">Forum Ubuntu-fr — sous-forum Xfce <span class="tag tag-forum">forum FR</span></a></li>
+                <li><a href="https://docs.xfce.org/contribute/bugs/start" target="_blank">Guide — comment reporter un bug <span class="tag tag-list">guide</span></a></li>
+                <li><a href="https://gitlab.xfce.org/xfce/xfce4-session/-/issues/new" target="_blank">➕ Reporter un bug (session) <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- MATE -->
+        <div id="mate" class="card c-mate">
+            <div class="card-header">
+                <div class="card-icon">🍵</div>
+                <div class="card-title">MATE</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://github.com/mate-desktop" target="_blank">github.com/mate-desktop — org</a></li>
+                <li><a href="https://github.com/mate-desktop/mate-desktop/issues" target="_blank">mate-desktop — issues <span class="tag tag-list">issues</span></a></li>
+                <li><a href="https://github.com/mate-desktop/mate-desktop/discussions" target="_blank">Discussions — forum communautaire <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forum.ubuntu-fr.org/viewforum.php?id=201" target="_blank">Forum Ubuntu-fr — sous-forum MATE <span class="tag tag-forum">forum FR</span></a></li>
+                <li><a href="https://github.com/search?q=org%3Amate-desktop+bug&type=issues" target="_blank">Recherche issues « bug » <span class="tag tag-search">search</span></a></li>
+                <li><a href="https://github.com/mate-desktop/mate-desktop/issues/new" target="_blank">➕ Reporter un bug <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- CINNAMON -->
+        <div id="cinnamon" class="card c-cinnamon">
+            <div class="card-header">
+                <div class="card-icon">🟫</div>
+                <div class="card-title">Cinnamon</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://github.com/linuxmint/cinnamon" target="_blank">github.com/linuxmint/cinnamon — repo</a></li>
+                <li><a href="https://github.com/linuxmint/cinnamon/issues" target="_blank">Issues Cinnamon <span class="tag tag-list">issues</span></a></li>
+                <li><a href="https://forums.linuxmint.com/viewforum.php?f=208" target="_blank">Forum Linux Mint — sous-forum Cinnamon <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forum-francophone-linuxmint.fr/" target="_blank">Forum francophone Linux Mint <span class="tag tag-forum">forum FR</span></a></li>
+                <li><a href="https://github.com/linuxmint/cinnamon/discussions" target="_blank">Discussions GitHub <span class="tag tag-list">discuss</span></a></li>
+                <li><a href="https://github.com/linuxmint/cinnamon/issues/new" target="_blank">➕ Reporter un bug <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- BUDGIE -->
+        <div id="budgie" class="card c-budgie">
+            <div class="card-header">
+                <div class="card-icon">🐦</div>
+                <div class="card-title">Budgie</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://github.com/BuddiesOfBudgie/budgie-desktop" target="_blank">github.com/BuddiesOfBudgie — repo</a></li>
+                <li><a href="https://github.com/BuddiesOfBudgie/budgie-desktop/issues" target="_blank">Issues Budgie Desktop <span class="tag tag-list">issues</span></a></li>
+                <li><a href="https://github.com/BuddiesOfBudgie/budgie-desktop/discussions" target="_blank">Discussions GitHub <span class="tag tag-list">discuss</span></a></li>
+                <li><a href="https://discuss.getsol.us/" target="_blank">Solus Forum — communauté historique Budgie <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forum.ubuntu-fr.org/viewforum.php?id=204" target="_blank">Forum Ubuntu-fr — sous-forum Budgie <span class="tag tag-forum">forum FR</span></a></li>
+                <li><a href="https://github.com/BuddiesOfBudgie/budgie-desktop/issues/new" target="_blank">➕ Reporter un bug <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+        <!-- LXQT -->
+        <div id="lxqt" class="card c-lxqt">
+            <div class="card-header">
+                <div class="card-icon">🪶</div>
+                <div class="card-title">LXQt</div>
+            </div>
+            <ul class="link-list">
+                <li><a href="https://github.com/lxqt" target="_blank">github.com/lxqt — org</a></li>
+                <li><a href="https://github.com/lxqt/lxqt/issues" target="_blank">Issues généraux <span class="tag tag-list">issues</span></a></li>
+                <li><a href="https://github.com/lxqt/lxqt/discussions" target="_blank">Discussions — forum communautaire <span class="tag tag-forum">forum</span></a></li>
+                <li><a href="https://forum.ubuntu-fr.org/viewforum.php?id=101" target="_blank">Forum Ubuntu-fr — sous-forum LXQt/LXDE <span class="tag tag-forum">forum FR</span></a></li>
+                <li><a href="https://github.com/lxqt/lxqt/blob/master/CONTRIBUTING.md" target="_blank">Guide de contribution &amp; bugs <span class="tag tag-list">guide</span></a></li>
+                <li><a href="https://github.com/lxqt/lxqt/issues/new" target="_blank">➕ Reporter un bug <span class="tag tag-report">report</span></a></li>
+            </ul>
+        </div>
+
+    </div><!-- /grid -->
+
+    <footer>
+        <span>// BUG TRACKERS REFERENCE — KERNEL &amp; BSD</span>
+        <span>Généré le
+            <script>document.write(new Date().toLocaleDateString('fr-FR'))</script> · 26 sources · 149 liens
+        </span>
+    </footer>
+
+</body>
+<script>
+    (async () => {
+        const statusEl = document.getElementById('krelease-status');
+        const listEl   = document.getElementById('krelease-list');
+
+        const FALLBACK = {"releases":[{"moniker":"mainline","version":"7.1-rc6","iseol":false,"released":{"isodate":"2026-05-31"},"gitweb":"https://git.kernel.org/torvalds/h/v7.1-rc6"},{"moniker":"stable","version":"7.0.11","iseol":false,"released":{"isodate":"2026-06-01"},"source":"https://cdn.kernel.org/pub/linux/kernel/v7.x/linux-7.0.11.tar.xz","gitweb":"https://git.kernel.org/stable/h/v7.0.11"},{"moniker":"longterm","version":"6.18.34","iseol":false,"released":{"isodate":"2026-06-01"},"gitweb":"https://git.kernel.org/stable/h/v6.18.34"},{"moniker":"longterm","version":"6.12.92","iseol":false,"released":{"isodate":"2026-06-01"},"gitweb":"https://git.kernel.org/stable/h/v6.12.92"},{"moniker":"longterm","version":"6.6.142","iseol":false,"released":{"isodate":"2026-06-01"},"gitweb":"https://git.kernel.org/stable/h/v6.6.142"},{"moniker":"longterm","version":"6.1.175","iseol":false,"released":{"isodate":"2026-06-01"},"gitweb":"https://git.kernel.org/stable/h/v6.1.175"},{"moniker":"longterm","version":"5.15.209","iseol":false,"released":{"isodate":"2026-06-01"},"gitweb":"https://git.kernel.org/stable/h/v5.15.209"},{"moniker":"longterm","version":"5.10.258","iseol":false,"released":{"isodate":"2026-06-01"},"gitweb":"https://git.kernel.org/stable/h/v5.10.258"}]};
+
+        const catLabel = { mainline:'Mainline', stable:'Stable', longterm:'LTS' };
+
+        function render(data, live) {
+            listEl.innerHTML = '';
+            statusEl.innerHTML = live
+                ? '✓ Mis à jour : ' + new Date().toLocaleTimeString('fr-FR')
+                : '⚠ Cache local — ' + FALLBACK.releases[1].released.isodate + ' · <a href="https://www.kernel.org/releases.json" target="_blank" style="color:var(--accent)">voir JSON</a>';
+            data.releases.forEach(rel => {
+                if (!['mainline','stable','longterm'].includes(rel.moniker)) return;
+                const row = document.createElement('div');
+                row.className = 'krelease';
+                const eol  = rel.iseol ? '<span class="krelease-eol">EOL</span>' : '';
+                const href = rel.gitweb ?? rel.source ?? 'https://kernel.org';
+                row.innerHTML = `
+                    <span class="krelease-cat">${catLabel[rel.moniker]}</span>
+                    <a class="krelease-ver" href="${href}" target="_blank">${rel.version}</a>
+                    <span class="krelease-date">${rel.released?.isodate ?? ''}</span>
+                    ${eol}`;
+                listEl.appendChild(row);
+            });
+        }
+
+        render(FALLBACK, false);
+
+        const PROXIES = [
+            'https://www.kernel.org/releases.json',
+            'https://corsproxy.io/?url=' + encodeURIComponent('https://www.kernel.org/releases.json'),
+            'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.kernel.org/releases.json')
+        ];
+        for (const url of PROXIES) {
+            try {
+                const r = await fetch(url, { signal: AbortSignal.timeout(4000) });
+                if (!r.ok) continue;
+                const data = await r.json();
+                if (data?.releases?.length) { render(data, true); break; }
+            } catch(e) { /* essai suivant */ }
+        }
+    })();
+</script>
+
+</html>
